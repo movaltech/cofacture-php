@@ -15,6 +15,14 @@ namespace Cofacture\Domain;
  * own doc comment for why this extends Invoice instead of repeating its fields.
  *
  * The inherited $cufe property holds this note's CUDE (schemeName "CUDE-SHA384").
+ *
+ * DIAN business rule confirmed against a real submission (2026-09-02, rule DAJ48 "Debe ser
+ * 31"): the issuer's own $supplier->identification->typeCode must be "31" (NIT) — even for a
+ * natural person whose Invoice/CreditNote both accept "13" (cédula) with zero complaints. A
+ * related rule (DAJ39) also requires $supplier->taxSchemeCode/taxSchemeName to be a real regime
+ * (e.g. "01"/"IVA") once identified via NIT — "ZZ"/"No aplica" (otherwise fine on Invoice/
+ * CreditNote) is rejected here. This package does not enforce either (same caller-trust
+ * boundary as everything else here); the caller is responsible for setting both correctly.
  */
 final class DebitNote extends Invoice
 {

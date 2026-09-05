@@ -16,7 +16,7 @@ A PHP toolkit for Colombian DIAN electronic invoicing: UBL 2.1 document generati
 - **Full document coverage** — Electronic Sales Invoice, Credit Note, Debit Note, Support Document, Adjustment Note to the Support Document, Attached Document, the five RADIAN acceptance/rejection events, and Individual Electronic Payroll.
 - **XAdES-EPES signing** — inclusive C14N 1.0 canonicalization, RSA-SHA256, DIAN's fixed signature policy, built from PEM or PKCS#12 (`.p12`/`.pfx`) certificates.
 - **Hash formulas verified against DIAN's own published worked examples** (Technical Annex 1.9), not just internal regression tests — CUFE, CUDE, CUDS, and the RADIAN event CUDE each have a dedicated test reproducing DIAN's official example.
-- **SOAP 1.2 + WS-Security client** for the full `WcfDianCustomerServices` contract: submission (`sendBillSync`, `sendBillAsync`, `sendTestSetAsync`, `sendNominaSync`, `sendEventUpdateStatus`), status/status-zip polling, numbering-range and acquirer queries, and document lookups.
+- **SOAP 1.2 + WS-Security client** implementing 16 operations of the `WcfDianCustomerServices` contract: `sendBillSync`, `sendBillAsync`, `sendBillAttachmentAsync`, `sendTestSetAsync`, `getStatus`, `getStatusZip`, `getNumberingRange`, `sendNominaSync`, `sendNominaSyncTestSet`, `sendEventUpdateStatus`, `getStatusEvent`, `getAcquirer`, `getXmlByDocumentKey`, `getReferenceNotes`, `getDocumentInfo`, `getExchangeEmails`.
 - **Response interpretation** — DIAN's validation messages are parsed into structured rejections vs. informational notices, ready to branch on.
 - **Namespace-correct XML by construction** — every element is created through a single namespace-aware factory, avoiding a common PHP DOM pitfall where a manually-prefixed element silently breaks canonicalization and produces an invalid digest.
 
@@ -66,7 +66,7 @@ $range = $ranges->responseList[0];
 //    order service, etc.) — cofacture never fetches it for you. $supplier, $customer,
 //    $headerTaxes, $totals, and $lines below are placeholders for values you supply.
 $invoice = new Invoice(
-    profileId: 'DIAN 2.1',
+    profileId: 'DIAN 2.1: Factura Electrónica de Venta',
     environmentCode: '2', // "1" production, "2" certification (habilitación)
     operationTypeCode: '10',
     documentTypeCode: '01',

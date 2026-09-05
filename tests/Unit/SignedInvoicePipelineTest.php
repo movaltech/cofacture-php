@@ -42,7 +42,7 @@ final class SignedInvoicePipelineTest extends TestCase
         $credentials = CertificateLoader::loadPem($certPem, $keyPem);
 
         $inv = new Invoice(
-            profileId: 'DIAN 2.1',
+            profileId: 'DIAN 2.1: Factura Electrónica de Venta',
             environmentCode: '2',
             operationTypeCode: '10',
             documentTypeCode: '01',

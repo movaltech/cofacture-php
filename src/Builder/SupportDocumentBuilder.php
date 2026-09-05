@@ -36,6 +36,17 @@ use DOMDocument;
  * plain Invoice (documentTypeCode "05") directly — the caller is responsible for computing the
  * CUDS (Cuds\Cuds), SoftwareSecurityCode and QR URL before calling build(); $inv's fields are
  * serialized as-is.
+ *
+ * DIAN business rule confirmed against a real submission (2026-09-02, rules DSAK25 "El
+ * contenido de este atributo no corresponde a 31", DSAK24b "El DV del NIT del adquiriente no es
+ * correcto", and DSAD06 "Valor del CUDS no está calculado correctamente"): the issuing
+ * company's own $inv->customer->identification->typeCode (the "adquiriente"/acquirer, since
+ * roles are inverted here) must be "31" (NIT) — same requirement as DebitNote's supplier side
+ * (see Domain/DebitNote.php), but on the opposite party. The Supplier side (the SNO) does not
+ * need this from the caller — SupportDocumentPartyXmlBuilder::appendSupplierParty already
+ * forces schemeName="31" unconditionally. This class does not enforce it for the Customer side;
+ * the caller is responsible for setting it correctly, or DIAN will also report the CUDS itself
+ * as miscalculated (it's computed from the same identification fields that get serialized).
  */
 final class SupportDocumentBuilder
 {

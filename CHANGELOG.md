@@ -5,6 +5,23 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2026-09-04
+
+### Changed
+
+- Clarified the `profileId` values used in the README example and test fixtures (e.g.
+  `"DIAN 2.1"` → `"DIAN 2.1: Factura Electrónica de Venta"`) and expanded the SOAP client
+  feature bullet to enumerate all 16 `WcfDianCustomerServices` operations it implements.
+
+### Documentation
+
+- Documented a DIAN business rule (confirmed against real submissions DAJ48, DAJ39, DSAK25,
+  DSAK24b, DSAD06) on `DebitNote` and `SupportDocumentBuilder`: the issuer's own
+  `supplier->identification->typeCode` must be `"31"` (NIT) — unlike `Invoice`/`CreditNote`,
+  which also accept `"13"` (cédula) — and `supplier->taxSchemeCode`/`taxSchemeName` must be a
+  real tax regime once identified via NIT (`"ZZ"`/"No aplica" is rejected). Doc comments only;
+  no behavior change, since the package does not enforce DIAN business rules itself.
+
 ## [0.1.0] - 2026-09-04
 
 ### Added
@@ -34,4 +51,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   namespace-aware factory, avoiding a common PHP DOM pitfall where a manually-prefixed
   element silently breaks canonicalization and produces an invalid digest.
 
+[0.1.1]: https://github.com/diegofxm/cofacture-php/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/diegofxm/cofacture-php/releases/tag/v0.1.0

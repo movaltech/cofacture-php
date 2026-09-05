@@ -53,7 +53,7 @@ final class SignedNotesPipelineTest extends TestCase
     public function testBuildSignAndVerifyCreditNote(): void
     {
         $cn = new CreditNote(
-            profileId: 'DIAN 2.1: Nota Crédito',
+            profileId: 'DIAN 2.1: Nota Crédito de Factura Electrónica de Venta',
             environmentCode: '2',
             operationTypeCode: '20', // references a specific invoice
             documentTypeCode: '91',
@@ -119,7 +119,7 @@ final class SignedNotesPipelineTest extends TestCase
     public function testBuildSignAndVerifyDebitNote(): void
     {
         $dn = new DebitNote(
-            profileId: 'DIAN 2.1: Nota Débito',
+            profileId: 'DIAN 2.1: Nota Débito de Factura Electrónica de Venta',
             environmentCode: '2',
             operationTypeCode: '30', // references a specific invoice
             documentTypeCode: '92',
