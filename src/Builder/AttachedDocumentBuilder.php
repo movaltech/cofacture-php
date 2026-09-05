@@ -12,8 +12,10 @@ use Cofacture\Domain\AttachedPartyInfo;
 use Cofacture\Domain\ValidationResult;
 use Cofacture\Xml\El;
 use Cofacture\Xml\Namespaces as NS;
+use DOMCdataSection;
 use DOMDocument;
 use DOMElement;
+use RuntimeException;
 
 /**
  * Builds the AttachedDocument (electronic container) that wraps an already-signed document
@@ -88,7 +90,7 @@ final class AttachedDocumentBuilder
         $root->appendChild(El::create($doc, 'cbc:UBLVersionID', 'UBL 2.1'));
         $root->appendChild(El::create($doc, 'cbc:CustomizationID', self::CUSTOMIZATION_ID));
         $root->appendChild(El::create($doc, 'cbc:ProfileID', $profileId));
-        $root->appendChild(El::create($doc, 'cbc:ProfileExecutionID', $ad->environmentCode));
+        $root->appendChild(El::create($doc, 'cbc:ProfileExecutionID', $ad->environmentCode->value));
         $root->appendChild(El::create($doc, 'cbc:ID', $ad->id));
         $root->appendChild(El::create($doc, 'cbc:IssueDate', $ad->issueDate));
         $root->appendChild(El::create($doc, 'cbc:IssueTime', $ad->issueTime));
@@ -106,7 +108,7 @@ final class AttachedDocumentBuilder
         $externalRef->appendChild(El::create($doc, 'cbc:EncodingCode', 'UTF-8'));
         $description = El::create($doc, 'cbc:Description');
         $externalRef->appendChild($description);
-        $description->appendChild($doc->createCDATASection($ad->attachmentXml));
+        $description->appendChild(self::createCData($doc, $ad->attachmentXml));
 
         foreach ($ad->validationResults as $validationResult) {
             self::appendParentDocumentLineReference($root, $validationResult);
@@ -161,7 +163,7 @@ final class AttachedDocumentBuilder
         $externalRef->appendChild(El::create($doc, 'cbc:EncodingCode', 'UTF-8'));
         $description = El::create($doc, 'cbc:Description');
         $externalRef->appendChild($description);
-        $description->appendChild($doc->createCDATASection($vr->applicationResponseXml));
+        $description->appendChild(self::createCData($doc, $vr->applicationResponseXml));
 
         $result = El::create($doc, 'cac:ResultOfVerification');
         $docRef->appendChild($result);
@@ -169,5 +171,21 @@ final class AttachedDocumentBuilder
         $result->appendChild(El::create($doc, 'cbc:ValidationResultCode', $vr->validationResultCode));
         $result->appendChild(El::create($doc, 'cbc:ValidationDate', $vr->validationDate));
         $result->appendChild(El::create($doc, 'cbc:ValidationTime', $vr->validationTime));
+    }
+
+    /**
+     * A CDATA section's own terminator is the literal "]]>" — XML has no escape for it, so a
+     * DOMDocument silently produces truncated/invalid XML if $content contains it, with no
+     * exception anywhere: saveXML() just closes the section early. Both call sites here embed
+     * XML DIAN itself already returned (the signed document being attached, or DIAN's own
+     * ApplicationResponse) — content this library never generated and cannot assume is free of
+     * that sequence. Failing loudly here is the only way this ever gets noticed.
+     */
+    private static function createCData(DOMDocument $doc, string $content): DOMCdataSection
+    {
+        if (str_contains($content, ']]>')) {
+            throw new RuntimeException('builder: content for a CDATA section contains "]]>", which cannot be escaped inside one');
+        }
+        return $doc->createCDATASection($content);
     }
 }

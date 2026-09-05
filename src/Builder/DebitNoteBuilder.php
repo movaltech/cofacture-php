@@ -54,12 +54,12 @@ final class DebitNoteBuilder
         $root->appendChild(El::create($doc, 'cbc:UBLVersionID', 'UBL 2.1'));
         $root->appendChild(El::create($doc, 'cbc:CustomizationID', $dn->operationTypeCode));
         $root->appendChild(El::create($doc, 'cbc:ProfileID', $dn->profileId));
-        $root->appendChild(El::create($doc, 'cbc:ProfileExecutionID', $dn->environmentCode));
+        $root->appendChild(El::create($doc, 'cbc:ProfileExecutionID', $dn->environmentCode->value));
         $root->appendChild(El::create($doc, 'cbc:ID', $dn->prefix . $dn->number));
 
         $uuid = El::create($doc, 'cbc:UUID', $dn->cufe);
         $root->appendChild($uuid);
-        $uuid->setAttribute('schemeID', $dn->environmentCode);
+        $uuid->setAttribute('schemeID', $dn->environmentCode->value);
         $uuid->setAttribute('schemeName', $dn->hashType);
 
         $root->appendChild(El::create($doc, 'cbc:IssueDate', $dn->issueDate));

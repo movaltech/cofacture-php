@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace Cofacture\Tests\Unit;
 
 use Cofacture\Cuds\Cuds;
+use Cofacture\Domain\Environment;
 use Cofacture\Domain\Identification;
 use Cofacture\Domain\Invoice;
 use Cofacture\Domain\Party;
@@ -22,7 +23,7 @@ final class CudsTest extends TestCase
     public function testCompute(): void
     {
         $doc = new Invoice(
-            environmentCode: '1',
+            environmentCode: Environment::Produccion,
             number: '8110007871',
             issueDate: '2019-01-12',
             issueTime: '07:00:00-05:00',
@@ -48,7 +49,7 @@ final class CudsTest extends TestCase
     public function testComputeOfficialExample(): void
     {
         $doc = new Invoice(
-            environmentCode: '2',
+            environmentCode: Environment::Habilitacion,
             prefix: 'DS',
             number: '236000000',
             issueDate: '2022-02-18',

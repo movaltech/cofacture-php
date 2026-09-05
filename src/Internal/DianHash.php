@@ -51,6 +51,6 @@ final class DianHash
             . $doc->supplier->identification->number
             . $doc->customer->identification->number
             . $lastSeedComponent
-            . $doc->environmentCode;
+            . $doc->environmentCode->value;
     }
 }

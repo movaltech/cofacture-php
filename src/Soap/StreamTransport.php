@@ -4,7 +4,7 @@
 
 declare(strict_types=1);
 
-namespace Cofacture\Soap\Internal;
+namespace Cofacture\Soap;
 
 use RuntimeException;
 

@@ -8,6 +8,8 @@ namespace Cofacture\Tests\Unit;
 
 use Cofacture\Builder\EventBuilder;
 use Cofacture\Builder\SignaturePlaceholder;
+use Cofacture\Domain\DocumentType;
+use Cofacture\Domain\Environment;
 use Cofacture\Domain\Event;
 use Cofacture\Domain\EventDocumentReference;
 use Cofacture\Domain\EventParty;
@@ -43,7 +45,7 @@ final class SignedEventPipelineTest extends TestCase
     private static function sampleEvent(): Event
     {
         return new Event(
-            environmentCode: '2',
+            environmentCode: Environment::Habilitacion,
             id: '1',
             issueDate: '2026-02-05',
             issueTime: '09:00:00-05:00',
@@ -52,7 +54,7 @@ final class SignedEventPipelineTest extends TestCase
                 number: '990068706',
                 cufe: '853657dcf2841c55c04338b24cc4db9dfbf87042f1ce1798e53f7b1f0502d00df9bd3f371dea47b02766424976d60ba2',
                 hashType: 'CUFE-SHA384',
-                documentTypeCode: '01',
+                documentTypeCode: DocumentType::Invoice,
             ),
             sender: new EventParty(
                 name: 'Consumidor Final',

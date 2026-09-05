@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 namespace Cofacture\Builder\Internal;
 
+use Cofacture\Domain\DocumentType;
 use Cofacture\Domain\Totals;
 use Cofacture\Xml\El;
 use DOMElement;
@@ -26,7 +27,7 @@ final class MonetaryTotalXmlBuilder
         string $node,
         Totals $totals,
         string $currency,
-        string $documentTypeCode,
+        DocumentType $documentTypeCode,
     ): void {
         $doc = $parent->ownerDocument;
         $el = El::create($doc, 'cac:' . $node);
@@ -44,7 +45,7 @@ final class MonetaryTotalXmlBuilder
         $taxIncl->setAttribute('currencyID', $currency);
         $el->appendChild($taxIncl);
 
-        if ($documentTypeCode === '01' && $totals->prepaidCents > 0) {
+        if ($documentTypeCode === DocumentType::Invoice && $totals->prepaidCents > 0) {
             $prepaid = El::create($doc, 'cbc:PrepaidAmount', XmlFormat::amount($totals->prepaidCents));
             $prepaid->setAttribute('currencyID', $currency);
             $el->appendChild($prepaid);

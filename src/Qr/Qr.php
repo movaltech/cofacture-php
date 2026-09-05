@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 namespace Cofacture\Qr;
 
+use Cofacture\Domain\Environment;
 use Cofacture\Domain\Format;
 use Cofacture\Domain\Invoice;
 
@@ -27,16 +28,16 @@ final class Qr
      * cbc:ProfileExecutionID). DIAN uses different domains per environment. This is the whole
      * QR content for Invoice/Credit Note/Debit Note — just a URL.
      */
-    public static function url(string $environmentCode, string $documentKey): string
+    public static function url(Environment $environmentCode, string $documentKey): string
     {
-        $base = $environmentCode === '2' ? self::HABILITACION_BASE_URL : self::PRODUCCION_BASE_URL;
+        $base = $environmentCode === Environment::Habilitacion ? self::HABILITACION_BASE_URL : self::PRODUCCION_BASE_URL;
         return $base . '?documentkey=' . $documentKey;
     }
 
     /** Builds the Support Document's QR URL. Uses the same searchqr endpoint as Invoice/Credit
      *  Note/Debit Note (FindDocument does not redirect) — this is only the URL component; see
      *  supportDocumentContent() for the full QR content the graphic representation requires. */
-    public static function supportDocumentUrl(string $environmentCode, string $cuds): string
+    public static function supportDocumentUrl(Environment $environmentCode, string $cuds): string
     {
         return self::url($environmentCode, $cuds);
     }
@@ -66,7 +67,7 @@ final class Qr
             $inv->supplier->identification->number,
             $inv->customer->identification->number,
             $softwarePin,
-            $inv->environmentCode === '2' ? '2' : '1',
+            $inv->environmentCode === Environment::Habilitacion ? '2' : '1',
             $cuds,
             self::url($inv->environmentCode, $cuds),
         );
@@ -93,7 +94,7 @@ final class Qr
             $inv->supplier->identification->number,
             $inv->customer->identification->number,
             $softwarePin,
-            $inv->environmentCode === '2' ? '2' : '1',
+            $inv->environmentCode === Environment::Habilitacion ? '2' : '1',
             $cuds,
             self::url($inv->environmentCode, $cuds),
         );

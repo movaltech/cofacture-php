@@ -7,6 +7,9 @@ composer.lock
 /.phpunit.result.cache
 /build/
 
+# deptrac
+/.deptrac.cache
+
 # Certificates and credentials — never commit these
 *.p12
 *.pfx

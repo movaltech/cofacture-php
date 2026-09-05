@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 namespace Cofacture\Builder\Internal;
 
+use Cofacture\Domain\DocumentType;
 use Cofacture\Domain\Invoice;
 use Cofacture\Domain\NumberingRange;
 use Cofacture\Xml\El;
@@ -37,7 +38,7 @@ final class ExtensionsXmlBuilder
         $dianExt = El::create($doc, 'sts:DianExtensions');
         $extensionContent->appendChild($dianExt);
 
-        if ($inv->documentTypeCode === '01' || $inv->documentTypeCode === '05') {
+        if ($inv->documentTypeCode === DocumentType::Invoice || $inv->documentTypeCode === DocumentType::SupportDocument) {
             self::appendInvoiceControl($dianExt, $inv->numberingRange);
         }
 

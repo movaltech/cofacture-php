@@ -31,9 +31,9 @@ final class DebitNote extends Invoice
      *  @param Line[] $lines */
     public function __construct(
         string $profileId = '',
-        string $environmentCode = '',
+        Environment $environmentCode = Environment::Habilitacion,
         string $operationTypeCode = '',
-        string $documentTypeCode = '',
+        DocumentType $documentTypeCode = DocumentType::DebitNote,
         string $hashType = '',
         string $prefix = '',
         string $number = '',

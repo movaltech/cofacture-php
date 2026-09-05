@@ -10,6 +10,7 @@ use Cofacture\Builder\AttachedDocumentBuilder;
 use Cofacture\Builder\SignaturePlaceholder;
 use Cofacture\Domain\AttachedDocument;
 use Cofacture\Domain\AttachedPartyInfo;
+use Cofacture\Domain\Environment;
 use Cofacture\Domain\Identification;
 use Cofacture\Domain\ValidationResult;
 use Cofacture\Signer\CertificateLoader;
@@ -34,7 +35,7 @@ final class SignedAttachedDocumentPipelineTest extends TestCase
         $credentials = CertificateLoader::loadPem($certPem, $keyPem);
 
         $ad = new AttachedDocument(
-            environmentCode: '2',
+            environmentCode: Environment::Habilitacion,
             id: '1',
             issueDate: '2026-01-20',
             issueTime: '10:05:00-05:00',

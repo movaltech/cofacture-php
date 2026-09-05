@@ -10,6 +10,8 @@ use Cofacture\Builder\InvoiceBuilder;
 use Cofacture\Builder\SignaturePlaceholder;
 use Cofacture\Cufe\Cufe;
 use Cofacture\Domain\Address;
+use Cofacture\Domain\DocumentType;
+use Cofacture\Domain\Environment;
 use Cofacture\Domain\Identification;
 use Cofacture\Domain\Invoice;
 use Cofacture\Domain\Line;
@@ -43,9 +45,9 @@ final class SignedInvoicePipelineTest extends TestCase
 
         $inv = new Invoice(
             profileId: 'DIAN 2.1: Factura Electrónica de Venta',
-            environmentCode: '2',
+            environmentCode: Environment::Habilitacion,
             operationTypeCode: '10',
-            documentTypeCode: '01',
+            documentTypeCode: DocumentType::Invoice,
             hashType: 'CUFE-SHA384',
             prefix: 'SETP',
             number: '990000001',

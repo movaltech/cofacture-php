@@ -15,7 +15,7 @@ namespace Cofacture\Domain;
 final class Reclamo extends Event
 {
     public function __construct(
-        string $environmentCode = '',
+        Environment $environmentCode = Environment::Habilitacion,
         string $id = '',
         string $issueDate = '',
         string $issueTime = '',

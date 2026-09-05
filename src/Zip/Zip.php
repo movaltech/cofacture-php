@@ -44,6 +44,7 @@ final class Zip
         if ($tmpPath === false) {
             throw new RuntimeException('zip: could not create a temporary file');
         }
+
         try {
             $archive = new \ZipArchive();
             if ($archive->open($tmpPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
@@ -60,10 +61,26 @@ final class Zip
             if ($bytes === false) {
                 throw new RuntimeException('zip: could not read back the archive');
             }
-            return $bytes;
-        } finally {
+        } catch (\Throwable $e) {
+            // Best-effort only on the failure path — the caller already has a real error to
+            // surface; a secondary "couldn't delete the temp file" failure here must not replace
+            // it (a finally block doing the same unlink would do exactly that).
             @unlink($tmpPath);
+            throw $e;
         }
+
+        // Success path: $tmpPath briefly held a real signed UBL document — real NIT, names,
+        // amounts, tax IDs. Deleting it is not optional cleanup, so a failure here must be loud,
+        // not swallowed with @ — the alternative is a legally-binding document sitting in a
+        // shared temp directory with nothing ever telling anyone it's there.
+        if (!unlink($tmpPath)) {
+            throw new RuntimeException(
+                "zip: built the archive but could not delete the temporary file at {$tmpPath} — " .
+                'it holds a real signed document; remove it by hand.',
+            );
+        }
+
+        return $bytes;
     }
 
     /**

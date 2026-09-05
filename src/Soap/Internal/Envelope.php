@@ -6,7 +6,8 @@ declare(strict_types=1);
 
 namespace Cofacture\Soap\Internal;
 
-use Cofacture\Signer\Credentials;
+use Cofacture\Internal\UuidV4;
+use Cofacture\Soap\Credentials;
 use Cofacture\Xml\El;
 use DOMDocument;
 use DOMElement;
@@ -101,7 +102,7 @@ final class Envelope
         El::declareNamespace($replyTo, 'wsa', self::NS_WSA);
         $replyTo->appendChild(El::create($doc, 'wsa:Address', self::NS_WSA . '/anonymous'));
 
-        $msgId = El::create($doc, 'wsa:MessageID', 'urn:uuid:' . self::uuidV4());
+        $msgId = El::create($doc, 'wsa:MessageID', 'urn:uuid:' . UuidV4::generate());
         $header->appendChild($msgId);
         El::declareNamespace($msgId, 'wsa', self::NS_WSA);
 
@@ -131,8 +132,8 @@ final class Envelope
         $ts->appendChild(El::create($doc, 'wsu:Created', $now->format('Y-m-d\TH:i:s.v\Z')));
         $ts->appendChild(El::create($doc, 'wsu:Expires', $now->modify('+5 minutes')->format('Y-m-d\TH:i:s.v\Z')));
 
-        $tokenId = 'X509-' . self::uuidV4();
-        $bst = El::create($doc, 'wsse:BinarySecurityToken', $credentials->certDerBase64);
+        $tokenId = 'X509-' . UuidV4::generate();
+        $bst = El::create($doc, 'wsse:BinarySecurityToken', $credentials->certificateDerBase64());
         $sec->appendChild($bst);
         // xmlns:wsu must be declared here: it isn't inherited from the sibling Timestamp element
         // (namespace declarations only flow down to descendants, never across siblings). Without
@@ -191,7 +192,7 @@ final class Envelope
         $ref->appendChild(El::create($doc, 'ds:DigestValue', $digestTo));
 
         $canonSignedInfo = $signedInfo->C14N(true, false, null, self::INCLUSIVE_NS_PREFIXES);
-        openssl_sign($canonSignedInfo, $signature, $credentials->key, OPENSSL_ALGO_SHA256);
+        openssl_sign($canonSignedInfo, $signature, $credentials->signingKey(), OPENSSL_ALGO_SHA256);
         $sigEl->appendChild(El::create($doc, 'ds:SignatureValue', base64_encode($signature)));
 
         $keyInfo = El::create($doc, 'ds:KeyInfo');
@@ -214,11 +215,4 @@ final class Envelope
         $ec->setAttribute('PrefixList', self::INCLUSIVE_NS_PREFIX_LIST);
     }
 
-    private static function uuidV4(): string
-    {
-        $data = random_bytes(16);
-        $data[6] = chr((ord($data[6]) & 0x0f) | 0x40);
-        $data[8] = chr((ord($data[8]) & 0x3f) | 0x80);
-        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
-    }
 }

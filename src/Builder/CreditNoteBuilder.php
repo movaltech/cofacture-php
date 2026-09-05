@@ -53,12 +53,12 @@ final class CreditNoteBuilder
         $root->appendChild(El::create($doc, 'cbc:UBLVersionID', 'UBL 2.1'));
         $root->appendChild(El::create($doc, 'cbc:CustomizationID', $cn->operationTypeCode));
         $root->appendChild(El::create($doc, 'cbc:ProfileID', $cn->profileId));
-        $root->appendChild(El::create($doc, 'cbc:ProfileExecutionID', $cn->environmentCode));
+        $root->appendChild(El::create($doc, 'cbc:ProfileExecutionID', $cn->environmentCode->value));
         $root->appendChild(El::create($doc, 'cbc:ID', $cn->prefix . $cn->number));
 
         $uuid = El::create($doc, 'cbc:UUID', $cn->cufe);
         $root->appendChild($uuid);
-        $uuid->setAttribute('schemeID', $cn->environmentCode);
+        $uuid->setAttribute('schemeID', $cn->environmentCode->value);
         $uuid->setAttribute('schemeName', $cn->hashType);
 
         $root->appendChild(El::create($doc, 'cbc:IssueDate', $cn->issueDate));

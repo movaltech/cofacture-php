@@ -14,6 +14,8 @@ use Cofacture\Domain\Address;
 use Cofacture\Domain\AdjustmentNote;
 use Cofacture\Domain\BillingReference;
 use Cofacture\Domain\DiscrepancyResponse;
+use Cofacture\Domain\DocumentType;
+use Cofacture\Domain\Environment;
 use Cofacture\Domain\Identification;
 use Cofacture\Domain\Invoice;
 use Cofacture\Domain\Line;
@@ -120,7 +122,7 @@ final class SignedSupportDocumentPipelineTest extends TestCase
             profileId: 'DIAN 2.1: Nota de ajuste al documento soporte en adquisiciones efectuadas a sujetos no obligados a expedir factura o documento equivalente',
             environmentCode: $sd->environmentCode,
             operationTypeCode: $sd->operationTypeCode,
-            documentTypeCode: '95',
+            documentTypeCode: DocumentType::AdjustmentNote,
             hashType: 'CUDS-SHA384',
             prefix: 'NAP',
             number: '1',
@@ -216,9 +218,9 @@ final class SignedSupportDocumentPipelineTest extends TestCase
     {
         return new Invoice(
             profileId: 'DIAN 2.1: documento soporte en adquisiciones efectuadas a no obligados a facturar.',
-            environmentCode: '2',
+            environmentCode: Environment::Habilitacion,
             operationTypeCode: '10', // Resident
-            documentTypeCode: '05',
+            documentTypeCode: DocumentType::SupportDocument,
             hashType: 'CUDS-SHA384',
             prefix: 'DS',
             number: '1',

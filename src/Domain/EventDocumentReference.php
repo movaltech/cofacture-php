@@ -21,7 +21,7 @@ final class EventDocumentReference
         /** "CUFE-SHA384" / "CUDE-SHA384" / "CUDS-SHA384". */
         public string $hashType = '',
         /** The referenced document's own type code, e.g. "01". */
-        public string $documentTypeCode = '',
+        public DocumentType $documentTypeCode = DocumentType::Invoice,
     ) {
     }
 }

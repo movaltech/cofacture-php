@@ -15,7 +15,7 @@ final class AttachedDocument
 {
     /** @param ValidationResult[] $validationResults */
     public function __construct(
-        public string $environmentCode = '',
+        public Environment $environmentCode = Environment::Habilitacion,
         /**
          * The generator's own consecutive number (AE04b) — it is NOT the wrapped document's
          * CUFE; the two are different values even though some providers conflate them in

@@ -4,7 +4,7 @@
 
 declare(strict_types=1);
 
-namespace Cofacture\Soap\Internal;
+namespace Cofacture\Soap;
 
 /**
  * A raw HTTP response. $statusCode is kept alongside $body because DIAN's receiving service

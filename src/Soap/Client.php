@@ -6,11 +6,8 @@ declare(strict_types=1);
 
 namespace Cofacture\Soap;
 
-use Cofacture\Signer\Credentials;
 use Cofacture\Soap\Internal\Envelope;
 use Cofacture\Soap\Internal\Operations;
-use Cofacture\Soap\Internal\StreamTransport;
-use Cofacture\Soap\Internal\Transport;
 use DOMDocument;
 use DOMElement;
 use DOMXPath;
@@ -66,7 +63,14 @@ final class Client
 
         $respDoc = new DOMDocument();
         $priorSetting = libxml_use_internal_errors(true);
-        $loaded = $respDoc->loadXML($response->body);
+        // LIBXML_NONET blocks libxml from ever fetching an external resource (DTD/entity/schema)
+        // over the network while parsing this response — the one place in this library that
+        // parses XML it did not itself generate. Deliberately NOT passing LIBXML_NOENT or
+        // LIBXML_DTDLOAD alongside it: those two together are what actually enables classic XXE
+        // entity expansion, and neither is needed for anything this parser does — if a future
+        // parsing issue ever looks like it would be fixed by adding them, that is a sign
+        // something else is wrong, not a reason to add them.
+        $loaded = $respDoc->loadXML($response->body, LIBXML_NONET);
         libxml_use_internal_errors($priorSetting);
         if (!$loaded) {
             throw new RuntimeException("soap: parse response (HTTP {$response->statusCode}, " . strlen($response->body) . " bytes):\n{$response->body}");

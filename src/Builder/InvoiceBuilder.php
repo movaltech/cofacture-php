@@ -59,12 +59,12 @@ final class InvoiceBuilder
         $root->appendChild(El::create($doc, 'cbc:UBLVersionID', 'UBL 2.1'));
         $root->appendChild(El::create($doc, 'cbc:CustomizationID', $inv->operationTypeCode));
         $root->appendChild(El::create($doc, 'cbc:ProfileID', $inv->profileId));
-        $root->appendChild(El::create($doc, 'cbc:ProfileExecutionID', $inv->environmentCode));
+        $root->appendChild(El::create($doc, 'cbc:ProfileExecutionID', $inv->environmentCode->value));
         $root->appendChild(El::create($doc, 'cbc:ID', $inv->prefix . $inv->number));
 
         $uuid = El::create($doc, 'cbc:UUID', $inv->cufe);
         $root->appendChild($uuid);
-        $uuid->setAttribute('schemeID', $inv->environmentCode);
+        $uuid->setAttribute('schemeID', $inv->environmentCode->value);
         $uuid->setAttribute('schemeName', $inv->hashType);
 
         $root->appendChild(El::create($doc, 'cbc:IssueDate', $inv->issueDate));
@@ -72,7 +72,7 @@ final class InvoiceBuilder
         if ($inv->dueDate !== '') {
             $root->appendChild(El::create($doc, 'cbc:DueDate', $inv->dueDate));
         }
-        $root->appendChild(El::create($doc, 'cbc:InvoiceTypeCode', $inv->documentTypeCode));
+        $root->appendChild(El::create($doc, 'cbc:InvoiceTypeCode', $inv->documentTypeCode->value));
         if ($inv->note !== '') {
             $root->appendChild(El::create($doc, 'cbc:Note', $inv->note));
         }

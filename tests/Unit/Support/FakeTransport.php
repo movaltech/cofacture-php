@@ -6,8 +6,8 @@ declare(strict_types=1);
 
 namespace Cofacture\Tests\Unit\Support;
 
-use Cofacture\Soap\Internal\Transport;
-use Cofacture\Soap\Internal\TransportResponse;
+use Cofacture\Soap\Transport;
+use Cofacture\Soap\TransportResponse;
 
 /**
  * A canned-response Transport for testing Client without a real DIAN server or a local HTTP

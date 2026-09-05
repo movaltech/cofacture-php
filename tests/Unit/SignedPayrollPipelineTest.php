@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace Cofacture\Tests\Unit;
 
 use Cofacture\Builder\SignaturePlaceholder;
+use Cofacture\Domain\Environment;
 use Cofacture\Payroll\Builder;
 use Cofacture\Payroll\Cune;
 use Cofacture\Qr\Qr;
@@ -47,7 +48,7 @@ final class SignedPayrollPipelineTest extends TestCase
             $n->ambiente,
         );
         $softwareSc = SecurityCode::compute($n->softwareId, '11111', $n->numero);
-        $codigoQr = Qr::url($n->ambiente, $cune);
+        $codigoQr = Qr::url(Environment::from($n->ambiente), $cune);
 
         $doc = Builder::build($n, $cune, $softwareSc, $codigoQr);
         self::assertSame('NominaIndividual', $doc->documentElement->localName);

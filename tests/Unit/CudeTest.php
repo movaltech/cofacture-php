@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace Cofacture\Tests\Unit;
 
 use Cofacture\Cude\Cude;
+use Cofacture\Domain\Environment;
 use Cofacture\Domain\Identification;
 use Cofacture\Domain\Invoice;
 use Cofacture\Domain\Party;
@@ -25,7 +26,7 @@ final class CudeTest extends TestCase
     public function testComputeCreditNoteOfficialExample(): void
     {
         $note = new Invoice(
-            environmentCode: '1',
+            environmentCode: Environment::Produccion,
             number: '8110007871',
             issueDate: '2019-01-12',
             issueTime: '07:00:00-05:00',
@@ -56,7 +57,7 @@ final class CudeTest extends TestCase
     public function testComputeDebitNoteOfficialExample(): void
     {
         $note = new Invoice(
-            environmentCode: '2',
+            environmentCode: Environment::Habilitacion,
             number: 'ND1001',
             issueDate: '2019-01-18',
             issueTime: '10:58:00-05:00',

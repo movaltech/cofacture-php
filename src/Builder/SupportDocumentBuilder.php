@@ -78,12 +78,12 @@ final class SupportDocumentBuilder
         $root->appendChild(El::create($doc, 'cbc:UBLVersionID', 'UBL 2.1'));
         $root->appendChild(El::create($doc, 'cbc:CustomizationID', $inv->operationTypeCode)); // "10" or "11"
         $root->appendChild(El::create($doc, 'cbc:ProfileID', $inv->profileId));
-        $root->appendChild(El::create($doc, 'cbc:ProfileExecutionID', $inv->environmentCode));
+        $root->appendChild(El::create($doc, 'cbc:ProfileExecutionID', $inv->environmentCode->value));
         $root->appendChild(El::create($doc, 'cbc:ID', $inv->prefix . $inv->number));
 
         $uuid = El::create($doc, 'cbc:UUID', $inv->cufe); // the CUDS is stored in cufe
         $root->appendChild($uuid);
-        $uuid->setAttribute('schemeID', $inv->environmentCode);
+        $uuid->setAttribute('schemeID', $inv->environmentCode->value);
         $uuid->setAttribute('schemeName', $inv->hashType); // "CUDS-SHA384"
 
         $root->appendChild(El::create($doc, 'cbc:IssueDate', $inv->issueDate));
@@ -91,7 +91,7 @@ final class SupportDocumentBuilder
         if ($inv->dueDate !== '') {
             $root->appendChild(El::create($doc, 'cbc:DueDate', $inv->dueDate));
         }
-        $root->appendChild(El::create($doc, 'cbc:InvoiceTypeCode', $inv->documentTypeCode)); // "05"
+        $root->appendChild(El::create($doc, 'cbc:InvoiceTypeCode', $inv->documentTypeCode->value)); // "05"
         if ($inv->note !== '') {
             $root->appendChild(El::create($doc, 'cbc:Note', $inv->note));
         }

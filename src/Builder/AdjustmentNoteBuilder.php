@@ -58,17 +58,17 @@ final class AdjustmentNoteBuilder
         $root->appendChild(El::create($doc, 'cbc:UBLVersionID', 'UBL 2.1'));
         $root->appendChild(El::create($doc, 'cbc:CustomizationID', $an->operationTypeCode));
         $root->appendChild(El::create($doc, 'cbc:ProfileID', $an->profileId));
-        $root->appendChild(El::create($doc, 'cbc:ProfileExecutionID', $an->environmentCode));
+        $root->appendChild(El::create($doc, 'cbc:ProfileExecutionID', $an->environmentCode->value));
         $root->appendChild(El::create($doc, 'cbc:ID', $an->prefix . $an->number));
 
         $uuid = El::create($doc, 'cbc:UUID', $an->cufe);
         $root->appendChild($uuid);
-        $uuid->setAttribute('schemeID', $an->environmentCode);
+        $uuid->setAttribute('schemeID', $an->environmentCode->value);
         $uuid->setAttribute('schemeName', $an->hashType); // "CUDS-SHA384"
 
         $root->appendChild(El::create($doc, 'cbc:IssueDate', $an->issueDate));
         $root->appendChild(El::create($doc, 'cbc:IssueTime', $an->issueTime));
-        $root->appendChild(El::create($doc, 'cbc:CreditNoteTypeCode', $an->documentTypeCode)); // "95"
+        $root->appendChild(El::create($doc, 'cbc:CreditNoteTypeCode', $an->documentTypeCode->value)); // "95"
         if ($an->note !== '') {
             $root->appendChild(El::create($doc, 'cbc:Note', $an->note));
         }

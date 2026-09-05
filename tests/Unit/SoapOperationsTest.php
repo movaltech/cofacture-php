@@ -175,6 +175,111 @@ XML;
         self::assertSame('', $got->receiverName);
     }
 
+    public function testGetStatusEventParsesResponse(): void
+    {
+        $xml = <<<'XML'
+<?xml version="1.0" encoding="UTF-8"?>
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope">
+  <s:Body>
+    <GetStatusEventResponse xmlns="http://wcf.dian.colombia">
+      <GetStatusEventResult xmlns:b="http://schemas.datacontract.org/2004/07/"
+                             xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+        <b:IsValid>true</b:IsValid>
+        <b:StatusCode>00</b:StatusCode>
+        <b:StatusDescription>La Notificacion ha sido autorizada</b:StatusDescription>
+      </GetStatusEventResult>
+    </GetStatusEventResponse>
+  </s:Body>
+</s:Envelope>
+XML;
+        $transport = new FakeTransport($xml);
+        $client = self::client($transport);
+
+        $got = $client->getStatusEvent('some-track-id');
+
+        self::assertTrue($got->isValid);
+        self::assertStringContainsString('<wcf:trackId>some-track-id</wcf:trackId>', $transport->sentBody);
+    }
+
+    /** Confirms the normal/expected case for most ID numbers: DIAN responds without an
+     *  ErrorMessage/Fault but with empty fields — this must not be treated as an error, only as
+     *  "no record found" (non-blocking, see the doc comment on Client::getAcquirer). */
+    public function testGetAcquirerNotFoundIsNotAnError(): void
+    {
+        $xml = <<<'XML'
+<?xml version="1.0" encoding="UTF-8"?>
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope">
+  <s:Body>
+    <GetAcquirerResponse xmlns="http://wcf.dian.colombia">
+      <GetAcquirerResult></GetAcquirerResult>
+    </GetAcquirerResponse>
+  </s:Body>
+</s:Envelope>
+XML;
+        $client = self::client(new FakeTransport($xml));
+
+        $got = $client->getAcquirer('13', '1122334455');
+
+        self::assertSame('', $got->receiverName);
+        self::assertSame('', $got->receiverEmail);
+    }
+
+    /** Confirms getStatus sends trackId (same request shape as getStatusEvent) and parses its
+     *  own <GetStatusResult> element — the query counterpart of sendBillSync. */
+    public function testGetStatusParsesResponse(): void
+    {
+        $xml = <<<'XML'
+<?xml version="1.0" encoding="UTF-8"?>
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope">
+  <s:Body>
+    <GetStatusResponse xmlns="http://wcf.dian.colombia">
+      <GetStatusResult xmlns:b="http://schemas.datacontract.org/2004/07/"
+                        xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+        <b:IsValid>true</b:IsValid>
+        <b:StatusCode>00</b:StatusCode>
+        <b:StatusDescription>La Factura electrónica ha sido autorizada</b:StatusDescription>
+      </GetStatusResult>
+    </GetStatusResponse>
+  </s:Body>
+</s:Envelope>
+XML;
+        $transport = new FakeTransport($xml);
+        $client = self::client($transport);
+
+        $got = $client->getStatus('some-track-id');
+
+        self::assertTrue($got->isValid);
+        self::assertSame('00', $got->statusCode);
+        self::assertStringContainsString('<wcf:trackId>some-track-id</wcf:trackId>', $transport->sentBody);
+    }
+
+    /** Confirms sendNominaSync sends only contentFile (no fileName, no testSetId — unlike
+     *  sendNominaSyncTestSet) and parses the shared <SendNominaSyncResult> element. */
+    public function testSendNominaSyncParsesResponse(): void
+    {
+        $xml = <<<'XML'
+<?xml version="1.0" encoding="UTF-8"?>
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope">
+  <s:Body>
+    <SendNominaSyncResponse xmlns="http://wcf.dian.colombia">
+      <SendNominaSyncResult xmlns:b="http://schemas.datacontract.org/2004/07/"
+                             xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+        <b:IsValid>true</b:IsValid>
+        <b:StatusCode>00</b:StatusCode>
+        <b:StatusDescription>La Nómina Electrónica ha sido autorizada</b:StatusDescription>
+      </SendNominaSyncResult>
+    </SendNominaSyncResponse>
+  </s:Body>
+</s:Envelope>
+XML;
+        $client = self::client(new FakeTransport($xml));
+
+        $got = $client->sendNominaSync('<NominaIndividual/>');
+
+        self::assertTrue($got->isValid);
+        self::assertSame('00', $got->statusCode);
+    }
+
     public function testSoapFaultIsThrown(): void
     {
         $xml = <<<'XML'

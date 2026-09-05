@@ -41,11 +41,11 @@ class Invoice
     public function __construct(
         public string $profileId = '',
         /** "1" production, "2" certification/testing (also used as the UUID's schemeID) */
-        public string $environmentCode = '',
+        public Environment $environmentCode = Environment::Habilitacion,
         /** Operation type catalog, e.g. "10" = Standard */
         public string $operationTypeCode = '',
         /** "01" national sales invoice */
-        public string $documentTypeCode = '',
+        public DocumentType $documentTypeCode = DocumentType::Invoice,
         /** "CUFE-SHA384", used as the UUID's schemeName */
         public string $hashType = '',
         public string $prefix = '',

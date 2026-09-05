@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 namespace Cofacture\Builder\Internal;
 
+use Cofacture\Domain\DocumentType;
 use Cofacture\Domain\Identification;
 use Cofacture\Domain\Line;
 use Cofacture\Xml\El;
@@ -20,23 +21,6 @@ use DOMElement;
  */
 final class LineItemXmlBuilder
 {
-    /**
-     * The closed set of document types whose Item carries InformationContentProviderParty/
-     * PowerOfAttorney/AgentParty (the "Mandante"/principal's identification) instead of
-     * StandardItemIdentification: Credit Note ("91"), Debit Note ("92"), and their Documento
-     * Equivalente Electrónico Adjustment Note equivalents ("93"/"94", Technical Annex Documento
-     * Equivalente Electrónico V1.0 section 16.3). Every other document type — Invoice, Support
-     * Document, Adjustment Note to the Support Document, and every Documento Equivalente
-     * Electrónico type (20/25/27/30/35/40/45/50/55/60, same annex) — uses
-     * StandardItemIdentification instead. This mirrors a real fix in the Go original: it used to
-     * be an allowlist ("01"/"05"/"95" defaulting everything else to Mandante), which silently
-     * broke the first time a new primary-document type code was introduced (Documento
-     * Equivalente Electrónico "20" fell into the Mandante branch by accident — caught by Go's
-     * builder/pos_test.go, not by inspection). MVP scope only builds "01" today, but this keeps
-     * the same landmine from being ported along with everything else.
-     */
-    private const DOCUMENT_TYPE_CODES_USING_MANDANTE = ['91' => true, '92' => true, '93' => true, '94' => true];
-
     private function __construct()
     {
     }
@@ -48,7 +32,7 @@ final class LineItemXmlBuilder
         int $index,
         Line $line,
         string $currency,
-        string $documentTypeCode,
+        DocumentType $documentTypeCode,
         Identification $mandanteId,
         string $invoicePeriodStartDate,
     ): void {
@@ -65,7 +49,7 @@ final class LineItemXmlBuilder
         $lineExt->setAttribute('currencyID', $currency);
         $el->appendChild($lineExt);
 
-        if ($documentTypeCode !== '92') {
+        if ($documentTypeCode !== DocumentType::DebitNote) {
             $el->appendChild(El::create($doc, 'cbc:FreeOfChargeIndicator', XmlFormat::bool($line->freeOfCharge)));
         }
 
@@ -93,18 +77,47 @@ final class LineItemXmlBuilder
         $item = El::create($doc, 'cac:Item');
         $el->appendChild($item);
         $item->appendChild(El::create($doc, 'cbc:Description', $line->description));
-        if (self::DOCUMENT_TYPE_CODES_USING_MANDANTE[$documentTypeCode] ?? false) {
+        // The closed set of document types whose Item carries InformationContentProviderParty/
+        // PowerOfAttorney/AgentParty (the "Mandante"/principal's identification) instead of
+        // StandardItemIdentification: Credit Note, Debit Note, and their Documento Equivalente
+        // Electrónico Adjustment Note equivalents (PosDebitAdjustment/PosCreditAdjustment,
+        // Technical Annex Documento Equivalente Electrónico V1.0 section 16.3). Every other
+        // document type — Invoice, Support Document, Adjustment Note to the Support Document,
+        // and every Documento Equivalente Electrónico type not yet modeled as its own
+        // DocumentType case (20/25/27/30/35/40/45/50/55/60, same annex) — uses
+        // StandardItemIdentification instead. This mirrors a real fix in the Go original: it used
+        // to be an allowlist ("01"/"05"/"95" defaulting everything else to Mandante), which
+        // silently broke the first time a new primary-document type code was introduced
+        // (Documento Equivalente Electrónico "20" fell into the Mandante branch by accident —
+        // caught by Go's builder/pos_test.go, not by inspection). MVP scope only builds "01"
+        // today, but this `match` with an explicit `default => false` keeps the same
+        // closed-allowlist shape (and the same landmine avoidance) as the array it replaces.
+        $usesMandante = match ($documentTypeCode) {
+            DocumentType::CreditNote, DocumentType::DebitNote, DocumentType::PosDebitAdjustment, DocumentType::PosCreditAdjustment => true,
+            default => false,
+        };
+        if ($usesMandante) {
+            // Each level is appended to its (already-attached) parent immediately, before its
+            // own children are created — never build the whole chain detached and attach only
+            // the outermost element at the end. Confirmed by direct experiment: a detached
+            // createElementNS() node keeps its own namespace declaration even after being
+            // reattached under an ancestor that already declares the same prefix/URI, so
+            // building bottom-up-then-attach-once produced a real, confirmed divergence from
+            // Go's output — a redundant xmlns:cbc repeated on every level of this exact chain
+            // (PartyIdentification, AgentParty, PowerOfAttorney, cbc:ID) — even though the
+            // schema-valid XML never affects signing (only the document root/KeyInfo/
+            // SignedProperties subtrees are ever canonicalized).
+            $infoProvider = El::create($doc, 'cac:InformationContentProviderParty');
+            $item->appendChild($infoProvider);
+            $powerOfAttorney = El::create($doc, 'cac:PowerOfAttorney');
+            $infoProvider->appendChild($powerOfAttorney);
+            $agentParty = El::create($doc, 'cac:AgentParty');
+            $powerOfAttorney->appendChild($agentParty);
+            $partyIdentification = El::create($doc, 'cac:PartyIdentification');
+            $agentParty->appendChild($partyIdentification);
             $agentId = El::create($doc, 'cbc:ID', $mandanteId->number);
             PartyXmlBuilder::setIdentificationAttrs($agentId, $mandanteId);
-            $partyIdentification = El::create($doc, 'cac:PartyIdentification');
             $partyIdentification->appendChild($agentId);
-            $agentParty = El::create($doc, 'cac:AgentParty');
-            $agentParty->appendChild($partyIdentification);
-            $powerOfAttorney = El::create($doc, 'cac:PowerOfAttorney');
-            $powerOfAttorney->appendChild($agentParty);
-            $infoProvider = El::create($doc, 'cac:InformationContentProviderParty');
-            $infoProvider->appendChild($powerOfAttorney);
-            $item->appendChild($infoProvider);
         } else {
             $sii = El::create($doc, 'cbc:ID', $line->itemCode);
             $standardItemId = El::create($doc, 'cac:StandardItemIdentification');

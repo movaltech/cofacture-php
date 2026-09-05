@@ -23,7 +23,7 @@ namespace Cofacture\Domain;
 class Event
 {
     public function __construct(
-        public string $environmentCode = '',
+        public Environment $environmentCode = Environment::Habilitacion,
         /** The event's own consecutive number (AAD05). */
         public string $id = '',
         public string $issueDate = '',

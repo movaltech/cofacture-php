@@ -32,7 +32,8 @@
         "ext-zip": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "^10.0"
+        "phpunit/phpunit": "^10.0",
+        "deptrac/deptrac": "^4.7"
     },
     "autoload": {
         "psr-4": {

@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 namespace Cofacture\Signer;
 
+use Cofacture\Internal\UuidV4;
 use Cofacture\Signer\Internal\XadesProperties;
 use Cofacture\Xml\El;
 use DOMElement;
@@ -49,7 +50,7 @@ final class Signer
         $doc = $root->ownerDocument;
         $docDigest = $this->digestValue($root);
 
-        $id = 'xmldsig-' . self::uuidV4();
+        $id = 'xmldsig-' . UuidV4::generate();
         $sigEl = El::create($doc, 'ds:Signature');
         $sigEl->setAttribute('Id', $id);
         $placeholder->appendChild($sigEl);
@@ -142,11 +143,4 @@ final class Signer
         return base64_encode(hash('sha256', $canon, true));
     }
 
-    private static function uuidV4(): string
-    {
-        $data = random_bytes(16);
-        $data[6] = chr((ord($data[6]) & 0x0f) | 0x40);
-        $data[8] = chr((ord($data[8]) & 0x3f) | 0x80);
-        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
-    }
 }

@@ -43,6 +43,9 @@ use Cofacture\Builder\InvoiceBuilder;
 use Cofacture\Builder\SignaturePlaceholder;
 use Cofacture\Cufe\Cufe;
 use Cofacture\Dian\Result;
+use Cofacture\Domain\Bogota;
+use Cofacture\Domain\DocumentType;
+use Cofacture\Domain\Environment;
 use Cofacture\Domain\Invoice;
 use Cofacture\Domain\NumberingRange;
 use Cofacture\Qr\Qr;
@@ -67,9 +70,9 @@ $range = $ranges->responseList[0];
 //    $headerTaxes, $totals, and $lines below are placeholders for values you supply.
 $invoice = new Invoice(
     profileId: 'DIAN 2.1: Factura Electrónica de Venta',
-    environmentCode: '2', // "1" production, "2" certification (habilitación)
+    environmentCode: Environment::Habilitacion, // Environment::Produccion once certified
     operationTypeCode: '10',
-    documentTypeCode: '01',
+    documentTypeCode: DocumentType::Invoice,
     hashType: 'CUFE-SHA384',
     prefix: $range->prefix,
     number: '990000001',
@@ -101,7 +104,7 @@ $invoice->qrUrl = Qr::url($invoice->environmentCode, $invoice->cufe);
 // 5. Build the UBL XML tree and sign it (XAdES-EPES).
 $doc = InvoiceBuilder::build($invoice);
 $placeholder = SignaturePlaceholder::find($doc);
-(new Signer($credentials))->sign($doc->documentElement, $placeholder, 'supplier', new DateTimeImmutable('now', new DateTimeZone('America/Bogota')));
+(new Signer($credentials))->sign($doc->documentElement, $placeholder, 'supplier', new DateTimeImmutable('now', Bogota::timezone()));
 $xml = $doc->saveXML();
 
 // 6. Name and package the file the way DIAN's receiving service expects.

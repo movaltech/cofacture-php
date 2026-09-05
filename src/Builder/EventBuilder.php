@@ -128,12 +128,12 @@ final class EventBuilder
         $root->appendChild(El::create($doc, 'cbc:UBLVersionID', 'UBL 2.1'));
         $root->appendChild(El::create($doc, 'cbc:CustomizationID', self::CUSTOMIZATION_ID));
         $root->appendChild(El::create($doc, 'cbc:ProfileID', self::PROFILE_ID));
-        $root->appendChild(El::create($doc, 'cbc:ProfileExecutionID', $ev->environmentCode));
+        $root->appendChild(El::create($doc, 'cbc:ProfileExecutionID', $ev->environmentCode->value));
         $root->appendChild(El::create($doc, 'cbc:ID', $ev->id));
 
         $uuid = El::create($doc, 'cbc:UUID', $ev->cude);
         $root->appendChild($uuid);
-        $uuid->setAttribute('schemeID', $ev->environmentCode);
+        $uuid->setAttribute('schemeID', $ev->environmentCode->value);
         $uuid->setAttribute('schemeName', 'CUDE-SHA384');
 
         $root->appendChild(El::create($doc, 'cbc:IssueDate', $ev->issueDate));
@@ -271,7 +271,7 @@ final class EventBuilder
         $uuid = El::create($doc, 'cbc:UUID', $ref->cufe);
         $docRef->appendChild($uuid);
         $uuid->setAttribute('schemeName', $ref->hashType);
-        $docRef->appendChild(El::create($doc, 'cbc:DocumentTypeCode', $ref->documentTypeCode));
+        $docRef->appendChild(El::create($doc, 'cbc:DocumentTypeCode', $ref->documentTypeCode->value));
 
         return $dr;
     }

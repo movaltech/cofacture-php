@@ -48,7 +48,7 @@ final class Cuds
             . $doc->supplier->identification->number
             . $doc->customer->identification->number
             . $softwarePin
-            . $doc->environmentCode;
+            . $doc->environmentCode->value;
 
         return hash('sha384', $seed);
     }

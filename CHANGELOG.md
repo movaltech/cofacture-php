@@ -5,6 +5,47 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2026-09-04
+
+### Changed
+
+- **Decoupled the SOAP and Signer modules**: `Soap` now depends on its own
+  `Cofacture\Soap\Credentials` interface instead of the concrete `Signer\Credentials` class.
+- Promoted `Soap\Internal\{Transport,TransportResponse,StreamTransport}` to `Soap\*` (they were
+  never actually internal — part of the module's real public surface) and deduplicated a UUIDv4
+  helper into a single `Internal\UuidV4`.
+- `environmentCode` and `documentTypeCode` are now backed enums (`Domain\Environment`,
+  `Domain\DocumentType`) across the whole public API instead of raw strings — a breaking change
+  for any caller passing string literals directly (`apidian-laravel` already updated).
+- Added `Domain\Bogota::timezone()` — a fixed UTC-5 offset, mirroring Go's
+  `time.FixedZone`, so building a signing timestamp no longer depends on the host having current
+  IANA tzdata for the named `America/Bogota` zone.
+- Enforced module boundaries with `deptrac.php` (0 violations across 771 checked dependencies).
+
+### Fixed
+
+- Credit Note / Debit Note / Adjustment Note's Mandante branch produced redundant/invalid
+  `xmlns:cbc` declarations from building the fragment detached and attaching it once; it's now
+  built attached top-down, matching every other branch.
+- `Signer\CertificateLoader`'s issuer Distinguished Name formatting now follows RFC 2253
+  (reversed attribute order, proper escaping, repeated attribute types preserved) instead of
+  ASN.1 order with no escaping — verified byte-for-byte against Go's `pkix.Name.String()`.
+- `AttachedDocumentBuilder` now rejects content containing the literal `]]>` before building a
+  CDATA section instead of silently producing truncated XML.
+- `Zip::build()` no longer leaves a temporary file holding a signed document behind on Windows
+  when it can't be deleted — it now fails loudly instead of failing silently.
+- `Soap\Client` explicitly guards XML parsing with `LIBXML_NONET`.
+- Removed a hardcoded, version-pinned Windows OpenSSL config path from the test suite in favor
+  of a portable fallback (`OPENSSL_CONF` env var → `PHP_BINDIR`-relative → version-agnostic
+  Laragon glob).
+
+### Added
+
+- Golden-file XML regression tests for all 15 document/event builders, byte-compared against
+  `cofacture`'s own Go-generated fixtures.
+- Test coverage for DIAN hash formulas, QR generation, security codes, certificate loading
+  (including CA-signed `.p12` chains), ZIP building, and 4 previously-untested SOAP operations.
+
 ## [0.1.1] - 2026-09-04
 
 ### Changed
@@ -51,5 +92,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   namespace-aware factory, avoiding a common PHP DOM pitfall where a manually-prefixed
   element silently breaks canonicalization and produces an invalid digest.
 
+[0.1.2]: https://github.com/diegofxm/cofacture-php/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/diegofxm/cofacture-php/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/diegofxm/cofacture-php/releases/tag/v0.1.0

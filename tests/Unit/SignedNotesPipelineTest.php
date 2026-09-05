@@ -15,6 +15,8 @@ use Cofacture\Domain\BillingReference;
 use Cofacture\Domain\CreditNote;
 use Cofacture\Domain\DebitNote;
 use Cofacture\Domain\DiscrepancyResponse;
+use Cofacture\Domain\DocumentType;
+use Cofacture\Domain\Environment;
 use Cofacture\Domain\Identification;
 use Cofacture\Domain\Line;
 use Cofacture\Domain\NumberingRange;
@@ -54,9 +56,9 @@ final class SignedNotesPipelineTest extends TestCase
     {
         $cn = new CreditNote(
             profileId: 'DIAN 2.1: Nota Crédito de Factura Electrónica de Venta',
-            environmentCode: '2',
+            environmentCode: Environment::Habilitacion,
             operationTypeCode: '20', // references a specific invoice
-            documentTypeCode: '91',
+            documentTypeCode: DocumentType::CreditNote,
             hashType: 'CUDE-SHA384',
             prefix: 'SETPNC',
             number: '1',
@@ -120,9 +122,9 @@ final class SignedNotesPipelineTest extends TestCase
     {
         $dn = new DebitNote(
             profileId: 'DIAN 2.1: Nota Débito de Factura Electrónica de Venta',
-            environmentCode: '2',
+            environmentCode: Environment::Habilitacion,
             operationTypeCode: '30', // references a specific invoice
-            documentTypeCode: '92',
+            documentTypeCode: DocumentType::DebitNote,
             hashType: 'CUDE-SHA384',
             prefix: 'SETPND',
             number: '1',
