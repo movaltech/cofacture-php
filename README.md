@@ -3,7 +3,7 @@
 [![CI](https://github.com/diegofxm/cofacture-php/actions/workflows/ci.yml/badge.svg)](https://github.com/diegofxm/cofacture-php/actions/workflows/ci.yml)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/diegofxm/cofacture.svg)](https://packagist.org/packages/diegofxm/cofacture)
 [![License](https://img.shields.io/badge/license-AGPL--3.0-blue)](LICENSE)
-[![PHP Version](https://img.shields.io/badge/php-%3E%3D8.1-777bb4)](composer.json)
+[![PHP Version](https://img.shields.io/badge/php-%3E%3D8.3-777bb4)](composer.json)
 [![Total Downloads](https://img.shields.io/packagist/dt/diegofxm/cofacture.svg)](https://packagist.org/packages/diegofxm/cofacture)
 
 A PHP toolkit for Colombian DIAN electronic invoicing: UBL 2.1 document generation, XAdES-EPES digital signing, CUFE/CUDE/CUDS/CUNE computation, and a SOAP client for DIAN's `WcfDianCustomerServices` web services.
