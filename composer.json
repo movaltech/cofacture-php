@@ -1,9 +1,9 @@
 {
-    "name": "diegofxm/cofacture",
+    "name": "movaltech/cofacture",
     "description": "A PHP toolkit for Colombian DIAN electronic invoicing: UBL 2.1 document generation, XAdES-EPES signing, CUFE/CUDE/CUDS/CUNE computation, and a SOAP client for DIAN's WcfDianCustomerServices.",
     "type": "library",
     "license": "AGPL-3.0",
-    "homepage": "https://github.com/diegofxm/cofacture-php",
+    "homepage": "https://github.com/movaltech/cofacture-php",
     "keywords": [
         "dian",
         "colombia",
@@ -22,8 +22,8 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/diegofxm/cofacture-php/issues",
-        "source": "https://github.com/diegofxm/cofacture-php"
+        "issues": "https://github.com/movaltech/cofacture-php/issues",
+        "source": "https://github.com/movaltech/cofacture-php"
     },
     "require": {
         "php": ">=8.3",

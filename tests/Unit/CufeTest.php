@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Cross-language golden test: this exact CUFE was computed by running the real Go
- * implementation (cufe.Compute in github.com/diegofxm/cofacture) against the same inputs. If
+ * implementation (cufe.Compute in github.com/movaltech/cofacture) against the same inputs. If
  * this test passes, HashSeed's field concatenation is byte-for-byte identical to the Go
  * original for this case — not just "looks similar", actually the same output.
  */

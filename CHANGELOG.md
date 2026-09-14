@@ -92,6 +92,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   namespace-aware factory, avoiding a common PHP DOM pitfall where a manually-prefixed
   element silently breaks canonicalization and produces an invalid digest.
 
-[0.1.2]: https://github.com/diegofxm/cofacture-php/compare/v0.1.1...v0.1.2
-[0.1.1]: https://github.com/diegofxm/cofacture-php/compare/v0.1.0...v0.1.1
-[0.1.0]: https://github.com/diegofxm/cofacture-php/releases/tag/v0.1.0
+[0.1.2]: https://github.com/movaltech/cofacture-php/compare/v0.1.1...v0.1.2
+[0.1.1]: https://github.com/movaltech/cofacture-php/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/movaltech/cofacture-php/releases/tag/v0.1.0

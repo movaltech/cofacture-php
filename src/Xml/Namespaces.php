@@ -9,7 +9,7 @@ namespace Cofacture\Xml;
 /**
  * UBL 2.1 + DIAN extension namespace constants shared by all builders.
  *
- * Mirrors github.com/diegofxm/cofacture/xml/namespaces.go — same constant names/values on
+ * Mirrors github.com/movaltech/cofacture/xml/namespaces.go — same constant names/values on
  * purpose, so the two implementations stay directly comparable field by field.
  */
 final class Namespaces
