@@ -146,6 +146,18 @@ Every other document type follows the same shape — build the domain model, com
 
 ---
 
+## Catalog data
+
+`cofacture-php` intentionally doesn't ship or validate DIAN's reference catalogs (departments, municipalities, document types, tax types, and so on) — see [Design boundaries](#design-boundaries-not-gaps) above. If your application needs that data, [`dian-catalogs`](https://github.com/movaltech/dian-catalogs) is a separate, versioned JSON dataset compiled from DIAN's Technical Annex and public standard code lists — no dependency on this library, or on PHP at all:
+
+```
+https://cdn.jsdelivr.net/gh/movaltech/dian-catalogs@v1.0.0/catalogs/departments.json
+```
+
+Always pin an exact version in the URL (`@v1.0.0`) rather than tracking a branch, so a future catalog update never changes behavior under you without notice.
+
+---
+
 ## Package map
 
 | Namespace | Responsibility |
